@@ -331,10 +331,10 @@ def on_note_will_be_added(col, note, deck_id):
 
 
 # Add the hook
-if pointVersion() >= 231000:
+if pointVersion() >= 20:
     hooks.note_will_be_added.append(on_note_will_be_added)
     gui_hooks.profile_will_close.append(save_cache_to_csv)
-elif pointVersion() >= 49:
+else:
     addHook("add_cards_did_add_note", on_note_will_be_added)
     # Save the cache when exiting Anki (optional)
     addHook("unloadProfile", save_cache_to_csv)
