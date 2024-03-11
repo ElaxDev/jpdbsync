@@ -12,22 +12,15 @@ import requests
 
 from aqt import reviewer
 from anki.hooks import wrap, addHook
-
-from anki import hooks, version as anki_version
+from anki import hooks
+from anki.utils import pointVersion
 from bs4 import BeautifulSoup
 import aqt
 from aqt.utils import showCritical
 from aqt.qt import *
-from aqt import mw
-
-parts = anki_version.split(".")
-major = int(parts[0])
-minor = int(parts[1])
-point_release = int(parts[2])
-
+from aqt import mw, gui_hooks
 
 word_cache = {}
-
 
 def setting(key):
     """Settings wrapper"""
@@ -338,11 +331,10 @@ def on_note_will_be_added(col, note, deck_id):
 
 
 # Add the hook
-if major <= 2:
+if pointVersion() >= 231000:
+    hooks.note_will_be_added.append(on_note_will_be_added)
+    gui_hooks.profile_will_close.append(save_cache_to_csv)
+elif pointVersion() >= 49:
     addHook("add_cards_did_add_note", on_note_will_be_added)
-
     # Save the cache when exiting Anki (optional)
     addHook("unloadProfile", save_cache_to_csv)
-else:
-    hooks.note_will_be_added.append(on_note_will_be_added)
-    hooks.profile_will_close.append(save_cache_to_csv)
